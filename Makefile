@@ -9,7 +9,7 @@ SRC := src
 
 KERNEL_SOURCE := /usr/src/linux-2.6.32.71
 
-KERNEL_VERS := $(shell uname -r)
+# KERNEL_VERS := $(shell uname -r)
 # KERNEL_DIR := /lib/modules/$(KERNEL_VERS)/build
 
 $(TARGET_NAME)-objs = $(SRC)/$(TARGET_NAME:.c=.o)
