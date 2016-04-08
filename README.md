@@ -1,3 +1,3 @@
-# CAN_DRIVER
+# CAN driver
 
 Linux CAN device driver.   
