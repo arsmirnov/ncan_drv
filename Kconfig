@@ -2,4 +2,4 @@ config CAN_OCP_DRV
 	bool
 	default m
 	help
-	CAN OCP driver
+	CAN23 OCP driver
