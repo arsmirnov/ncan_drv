@@ -25,7 +25,7 @@
 
 // Control and status registers
 
-#define CAN23_CAN_ID 				0x000
+#define CAN23_CAN_ID 	 			0x000
 #define CAN23_CNTRL 				0x004
 #define CAN23_TIME_CFG 				0x008
 #define CAN23_ERR_STATE 			0x00C
