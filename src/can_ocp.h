@@ -5,7 +5,7 @@
     email		: asmirnov.cs.niisi.ras.ru 
 	
 	This file contains:
-		- Driver`s information
+	- Driver`s information
     	- Definitions registers CAN OCP.
     	- Description device
  ***************************************************************************/
