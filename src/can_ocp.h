@@ -72,6 +72,9 @@ struct can23_ocp {
 
 	struct net_device *ndev;
 	struct napi_struct napi;
+
+	void __iomem *reg;
+	
 };
 
 
