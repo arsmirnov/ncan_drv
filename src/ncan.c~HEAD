@@ -108,7 +108,14 @@ static int ncan_set_bittiming( struct ncan_priv *priv )
 	netdev_info( priv->ndev, "Setting register: TimeConfig = %#X\n", ncan_btc );
 
 	return 0;
-}      
+}
+
+
+
+
+
+
+
 
 
 /*-----------------------------------------------------------------------------
