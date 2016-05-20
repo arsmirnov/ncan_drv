@@ -47,14 +47,14 @@ static const struct can_bittiming_const ncan_bittiming_const
 *
 * @param: 
 *	ncan_priv - pointer to structure with CAN private data.
-*	reg_offset - register offset.
+*	reg - register offset.
 *	value - value for writing.
 * @return:
 *	none		
 **/
-static inline void ncan_write( const struct ncan_priv *priv, u32 reg_offset, u32 value )
+static inline void ncan_write( const struct ncan_priv *priv, u32 reg, u32 value )
 {
-	iowrite32( value, priv->reg_base + reg_offset );
+	iowrite32( value, priv->reg_base + reg );
 }
 
 /****
@@ -64,12 +64,13 @@ static inline void ncan_write( const struct ncan_priv *priv, u32 reg_offset, u32
 *
 * @param: 
 *	ncan_priv - pointer to structure with CAN private data.
+*	reg - register offset.
 * @return:
 *	value read from register	
 **/
-static inline u32 ncan_read( const struct ncan_priv *priv, u32 reg_offset )
+static inline u32 ncan_read( const struct ncan_priv *priv, u32 reg )
 {
-	return ioread32( priv->reg_base + reg_offset );
+	return ioread32( priv->reg_base + reg );
 }
 
 /****
@@ -83,6 +84,7 @@ static inline u32 ncan_read( const struct ncan_priv *priv, u32 reg_offset )
 *	null
 *	
 **/
+
 static int ncan_set_bittiming( struct ncan_priv *priv )
 {
 	struct can_bittiming *bit_timing = &priv->can.bittiming;
@@ -110,6 +112,41 @@ static int ncan_set_bittiming( struct ncan_priv *priv )
 	return 0;
 }      
 
+/****
+* @fn ncan_set_bit
+*
+* Set corresponding bit in register.
+*
+* @param: 
+*	ncan_priv - pointer to structure with CAN private data.
+*	reg - register offset.
+*	bit_mask - (1<<num_bit)
+* @return:
+*	 none 
+**/
+static inline void ncan_set_bit( const struct ncan_priv *priv, u32 reg, u32 bit_mask )
+{
+	u32 value = ( ncan_read( priv, reg ) | bit_mask );
+	ncan_write( priv, reg, value );
+}
+
+/****
+* @fn ncan_clear_bit
+*
+* Clear corresponding bit in register.
+*
+* @param: 
+*	ncan_priv - pointer to structure with CAN private data.
+*	reg - register offset.
+*	bit_mask - (1<<num_bit)
+* @return:
+*	 none 
+**/
+static inline void ncan_clear_bit( const struct ncan_priv *priv, u32 reg, u32 bit_mask )
+{
+	u32 value = ( ncan_read( priv, reg ) & (~bit_mask) );
+	ncan_write( priv, reg, value );
+}
 
 /*-----------------------------------------------------------------------------
 --------------------- Definitions platform driver callbacks ------------------- 
@@ -168,4 +205,4 @@ module_platform_driver(ncan_driver);
 -----------------------------------------------------------------------------*/
 
 MODULE_AUTHOR("A.Smirnov <altemka@icloud.com>");
-MODULE_DESCRIPTION("CAN driver for SoC 1907BM056 ncan RAS");
+MODULE_DESCRIPTION("CAN driver for SoC 1907BM056");
