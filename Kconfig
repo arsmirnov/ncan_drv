@@ -1,5 +1,0 @@
-config CAN_OCP_DRV
-	bool
-	default m
-	help
-	CAN23 OCP driver

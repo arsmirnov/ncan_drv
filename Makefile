@@ -1,8 +1,8 @@
-#	makefile for building modules of kernel
-#	author: a.smirnov
+#	Makefile for building module of kernel
+#	Author: A.Smirnov
 ##
 
-TARGET_NAME := can_ocp.c
+TARGET_NAME := ncan.c
 
 PWD := $(shell pwd)
 SRC := src

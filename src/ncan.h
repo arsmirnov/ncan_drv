@@ -1,21 +1,23 @@
-/***************************************************************************
-    ncan.h	-	header for CAN driver SoC 1907BM056
+/******************************************************************************
+    ncan.h	-	device description.
     -------------------
     author		: A.Smirnov 
     email		: altemka@icloud.com 
-	
+
+	Header for CAN driver SoC 1907BM056.
+
 	This file contains:
 		- Driver's information.
     	- Definitions registers CAN SoC 1907BM056.
     	- Definitions register masks.
     	- Description device.
-***************************************************************************/
+******************************************************************************/
 
-#ifndef CAN_NCAN_H
-#define CAN_NCAN_H
+#ifndef NCAN_H
+#define NCAN_H
 
 /*-----------------------------------------------------------------------------
----------------------------- Driver`s information ----------------------------- 
+---------------------------- Driver's information ----------------------------- 
 -----------------------------------------------------------------------------*/
 
 #define DRV_NAME #ncan
@@ -24,7 +26,7 @@
 ------------------------------ Control register -------------------------------- 
 ------------------------------------------------------------------------------*/
 
-// Control and status registers
+// ---------------------- Control and status registers -------------------------
 
 #define NCAN_REG_ID 	 					0x0000
 #define NCAN_REG_CNTRL 						0x0004
@@ -66,25 +68,29 @@
 ------------------------ Register bit masks and shifts ------------------------ 
 -----------------------------------------------------------------------------*/
 
-// ----------- TimeConfig register ----------
-#define NCAN_TIME_CFG_SAM_EN			BIT(7) // Triple sampling
+// -------------------------- TimeConfig register -----------------------------
+
+#define NCAN_TIME_CFG_SAM_EN				BIT(7) // Triple sampling
 
 // Shifts TSEG2, TSEG1, SJW, BRP
-#define NCAN_TIME_CFG_TSEG2_S			0
-#define NCAN_TIME_CFG_TSEG1_S			3
-#define NCAN_TIME_CFG_SJW_S				8
-#define NCAN_TIME_CFG_BRP_S				16
+#define NCAN_TIME_CFG_TSEG2_S				0
+#define NCAN_TIME_CFG_TSEG1_S				3
+#define NCAN_TIME_CFG_SJW_S					8
+#define NCAN_TIME_CFG_BRP_S					16
 
-// ------------ Control register ------------
-#define NCAN_CNTRL_CAN_LOM_EN			BIT(5)	// Listen-only mode
-#define NCAN_CNTRL_CAN_STM_EN			BIT(6)	// Self-mode testing
-#define NCAN_CNTRL_CAN_RS_SRES			BIT(7)	// Software reset
-#define NCAN_CNTRL_CAN_RS_ABO_EN		BIT(9)	// CAN enable	
-#define NCAN_CNTRL_CAN_RS_EN			BIT(10) // Extern transceiver
+// ---------------------------- Control register ------------------------------
+
+#define NCAN_CNTRL_CAN_LOM_EN				BIT(5)	// Listen-only mode
+#define NCAN_CNTRL_CAN_STM_EN				BIT(6)	// Self-mode testing
+#define NCAN_CNTRL_CAN_RS_SRES				BIT(7)	// Software reset
+#define NCAN_CNTRL_CAN_RS_ABO_EN			BIT(9)	// CAN enable	
+#define NCAN_CNTRL_CAN_RS_EN				BIT(10) // Extern transceiver
 
 /*-----------------------------------------------------------------------------
 ----------------------------- Description CAN device  ------------------------- 
 -----------------------------------------------------------------------------*/
+
+// ----------------------------- Private data NCAN ----------------------------
 
 struct ncan_priv {   
 
@@ -98,5 +104,6 @@ struct ncan_priv {
 
 	//struct clk *clk;
 };
+
 
 #endif

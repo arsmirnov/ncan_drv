@@ -1,5 +1,5 @@
 /***************************************************************************
-	ncan.c	-	module of kernel
+	ncan.c	-	module of kernel.
     -------------------
     author		: A.Smirnov 
     email		: altemka@icloud.com
@@ -18,6 +18,8 @@
 #include <linux/platform_device.h>
 
 #include "ncan.h"
+#include "soc-1907BM056_can.h"
+
 
 /*-----------------------------------------------------------------------------
 ------------------------ Initialization data structures ----------------------- 
@@ -245,7 +247,7 @@ static void ncan_stop( struct net_device *ndev )
 ---------------------------- Network device driver ---------------------------- 
 -----------------------------------------------------------------------------*/
 
-/* ----------------------- Network device callbacks ------------------------ */
+// ----------------------- Network device callbacks ---------------------------
 
 /****
 * @fn ncan_net_device_open
@@ -322,25 +324,25 @@ static int ncan_net_device_close( struct net_device *ndev )
 /****
 * @fn ncan_net_device_xmit
 *
-* Called when a packet needs to be transmitted.
+* Network device driver callback: called when a packet needs to be transmitted.
 *
 * @param: 
 *	ndev - pointer to structure with network device data
 * @return:
 *	null
 **/
-static int ncan_net_device_close( struct net_device *ndev )
+static int ncan_net_device_xmit( struct net_device *ndev )
 {
 
 	return 0;
 }
 
-/*------------ Definition structure with network device options -------------*/
+// ------------ Definition structure with network device options --------------
 
 static const struct net_device_ops ncan_net_device_ops = {
 	.ndo_open			= ncan_net_device_open,	
 	.ndo_stop			= ncan_net_device_close,
-	.ndo_start_xmit		= 
+	.ndo_start_xmit		= ncan_net_device_xmit,
 	.ndo_change_mtu		= can_change_mtu,
 };
 
@@ -375,10 +377,9 @@ static int ncan_platform_remove( struct platform_device *pdev )
 
 	return 0;
 }
- 
-/* ----------------------- Platform driver registration --------------------- */
 
-// Definition structure with parameters platform driver
+// ------------ Definition structure with parameters platform driver ----------
+
 static struct platform_driver ncan_driver = {
 	.driver = {
 		.name = DRV_NAME,
@@ -387,8 +388,59 @@ static struct platform_driver ncan_driver = {
 	.remove = ncan_remove,
 };
 
-// Driver's registration
-module_platform_driver(ncan_driver);   
+/*-----------------------------------------------------------------------------
+----------------- Functions of module initialization and exit ----------------- 
+-----------------------------------------------------------------------------*/
+
+/****
+* @fn ncan_module_init
+*
+* This function is called when module is loaded in kernel.
+*
+* @param: 
+*	none
+* @return:
+*	if everything is good - 0, otherwise any other value
+**/
+static int __init ncan_module_init( void )
+{
+	int status;
+
+	printk( KERN_INFO "start module %s...\n", DRV_NAME );
+
+	// Register of platform device
+	status = platform_device_register(&ncan_device);
+	// Register of platform driver
+	status |= platform_driver_register(&ncan_driver);
+
+	return status;
+} 
+
+/****
+* @fn ncan_module_exit
+*
+* This function is called when module is unloaded from kernel.
+*
+* @param: 
+*	none
+* @return:
+*	none
+**/
+static void __exit ncan_module_exit( void )
+{
+
+	printk( KERN_INFO "stop module %s...\n", DRV_NAME );
+
+	// Unregister of platform device
+	platform_device_register(&ncan_device);
+	// Unregister of platform driver
+	platform_driver_register(&ncan_driver);
+} 
+
+// ---------------------- Register init/exit functions ------------------------
+
+module_init( ncan_module_init );
+module_exit( ncan_module_exit );
 
 /*-----------------------------------------------------------------------------
 ------------------------- Information about the module ------------------------ 
