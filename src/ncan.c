@@ -146,29 +146,7 @@ static inline u32 ncan_get_bit( const struct ncan_priv *priv, u32 reg, u32 bit_m
 **/
 static int ncan_set_bittiming( struct ncan_priv *priv )
 {
-	struct can_bittiming *bit_timing = &priv->can.bittiming;
-	u32 ncan_btc;
-
-	// Setting phase segment 2(TSEG2)
-	ncan_btc = ( bit_timing->phase_seg2 - 1 ) << NCAN_TIME_CFG_TSEG2_S;
-
-	// Setting phase segment 1(TSEG1)
-	ncan_btc |= ( bit_timing->phase_seg1 - 1 ) << NCAN_TIME_CFG_TSEG1_S;
-
-	// Setting the number of samples
-	if( priv->can.ctrlmode & CAN_CTRLMODE_3_SAMPLES )
-		ncan_btc |= NCAN_TIME_CFG_SAM_M;
-
-	// Setting synchronization jump width(SJW)
-	ncan_btc |= ( bit_timing->sjw - 1 ) << NCAN_TIME_CFG_SJW_S;
-
-	// Setting time quantum prescaler
-	ncan_btc |= ( bit_timing->brp - 1 ) << NCAN_TIME_CFG_BRP_S;
-
-	ncan_write( priv, NCAN_REG_TIME_CFG, ncan_btc );
-	netdev_info( priv->ndev, "Setting register: TimeConfig = %#X\n", ncan_btc );
-
-	return 0;
+	printk( KERN_DEBUG "%s\n", __FUNCTION__ );	
 }      
 
 /****
@@ -183,19 +161,7 @@ static int ncan_set_bittiming( struct ncan_priv *priv )
 **/
 static void ncan_init( struct net_device *ndev )
 {
-	// Get private data from net_device structure 
-	struct ncan_priv *priv = netdev_priv( ndev );
-
-	netdev_info( ndev, "Initialization ncan...\n" );
-	
-	// --------- Initialization CAN ----------
-	// 1. Software reset
-	ncan_set_bit( priv, NCAN_REG_CNTRL, NCAN_CNTRL_CAN_RS_SRES );
-	// 2. Setting bit-timing configuration
-	ncan_set_bittiming( priv );
-	// 3. Enable CAN and extern transceiver
-	u32 val = NCAN_CNTRL_CAN_RS_ABO_EN | NCAN_CNTRL_CAN_RS_EN;
-	ncan_write( priv, NCAN_REG_CNTRL, val );
+	printk( KERN_DEBUG "%s\n", __FUNCTION__ );
 }
 
 /****
@@ -210,7 +176,7 @@ static void ncan_init( struct net_device *ndev )
 **/
 static irqreturn_t ncan_interrupt_handler( int irq, void *dev_id )
 {
-
+	printk( KERN_DEBUG "%s\n", __FUNCTION__ );
 }
 
 /****
@@ -225,7 +191,7 @@ static irqreturn_t ncan_interrupt_handler( int irq, void *dev_id )
 **/
 static void ncan_start( struct net_device *ndev )
 {
-
+	printk( KERN_DEBUG "%s\n", __FUNCTION__ );
 }
 
 /****
@@ -240,7 +206,7 @@ static void ncan_start( struct net_device *ndev )
 **/
 static void ncan_stop( struct net_device *ndev )
 {
-
+	printk( KERN_DEBUG "%s\n", __FUNCTION__ );
 }
 
 /*-----------------------------------------------------------------------------
@@ -261,33 +227,7 @@ static void ncan_stop( struct net_device *ndev )
 **/
 static int ncan_net_device_open( struct net_device *ndev )
 {
-	// Get private data from net_device structure 
-	struct ncan_priv *priv = netdev_priv( ndev );
-	int err_status;	
-	
-	// Register interrupt handler
-	err_status = request_irq( ndev->irq, ncan_interrupt_handler, IRQF_SHARED, ndev->name, ndev );
-	if( err_status )
-	{
-		netdev_err( ndev, "Request interrupt is failed: %d\n", err_status );
-		return err_status;
-	}
-
-	// Open CAN device(check params and switch on)
-	err_status = open_candev(ndev);
-	if( err_status )
-	{
-		netdev_err( ndev, "Cannot open CAN device: %d\n", err_status );
-		free_irq( ndev->irq, ndev );
-		return err_status;
-	}
-	
-	// Initialization CAN
-	ncan_start( ndev );
-	// Enable NAPI scheduling
-	napi_enable( &priv->napi );
-	// Allow working net device(rx/tx)
-	netif_start_queue( ndev );
+	printk( KERN_DEBUG "%s\n", __FUNCTION__ );
 	
 	return 0;
 }
@@ -304,19 +244,7 @@ static int ncan_net_device_open( struct net_device *ndev )
 **/
 static int ncan_net_device_close( struct net_device *ndev )
 {
-	// Get private data from net_device structure 
-	struct ncan_priv *priv = netdev_priv( ndev );
-	
-	// Stop working net device(rx/tx)
-	netif_stop_queue( ndev );
-	// Disable NAPI scheduling
-	napi_disable( &priv->napi );
-	// Stop CAN device work
-	ncan_stop( ndev );
-	// Free interrupt
-	free_irq( ndev->irq, ndev );
-	// Close CAN device
-	close_candev( ndev );
+	printk( KERN_DEBUG "%s\n", __FUNCTION__ );
 
 	return 0;
 }
@@ -333,6 +261,7 @@ static int ncan_net_device_close( struct net_device *ndev )
 **/
 static int ncan_net_device_xmit( struct net_device *ndev )
 {
+	printk( KERN_DEBUG "%s\n", __FUNCTION__ );
 
 	return 0;
 }
@@ -352,28 +281,12 @@ static const struct net_device_ops ncan_net_device_ops = {
 
 static int ncan_platform_probe( struct platform_device *pdev )
 {
-
+	printk( KERN_DEBUG "%s\n", __FUNCTION__ );
 }
 
 static int ncan_platform_remove( struct platform_device *pdev )
 {
-	struct resource *res;
-	struct net_device *ndev = platform_get_drvdata( pdev );
-	struct ncan_priv *priv = netdev_priv( ndev );
-
-	// shut down and remove module from the kernel tables
-	unregister_netdev( ndev );
-
-	// free memory
-	iounmap( priv->reg_base );
-	res = platform_get_resource( pdev, IORESOURCE_MEM, 0 );
-	release_mem_region( res->start, resource_size( res ) );
-
-	// free clock source
-	clk_put( priv->clk );	// !!!!!!!!
-
-	// free can-device
-	free_candev( ndev );
+	printk( KERN_DEBUG "%s\n", __FUNCTION__ );
 
 	return 0;
 }
