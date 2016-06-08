@@ -350,10 +350,28 @@ static const struct net_device_ops ncan_net_device_ops = {
 --------------------------- Platform device driver ----------------------------
 -----------------------------------------------------------------------------*/
 
+/****
+* @fn ncan_module_init
+*
+* This function is called when platform driver is registered in kernel.
+*
+* @param: 
+*	pdev - pointer to structure with platform device data
+* @return:
+*	if everything is good - 0, otherwise - error code
+**/
 static int ncan_platform_probe( struct platform_device *pdev )
 {
+	struct net_device *ndev = (struct net_device*)0;
+	struct ncan_priv *priv;
+	struct resource *mem, *irq;
+	void __iomem *addr;
 
+	mem = platform_get_resource( &pdev->dev, IORESOURCE_MEM, 0 );
 }
+
+
+
 
 static int ncan_platform_remove( struct platform_device *pdev )
 {
