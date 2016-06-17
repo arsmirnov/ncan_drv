@@ -10,6 +10,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/version.h>
+#include <linux/errno.h>
 #include <linux/interrupt.h>
 #include <linux/can/dev.h>
 #include <linux/clk.h>
@@ -25,7 +26,7 @@
 ------------------------ Initialization data structures ----------------------- 
 -----------------------------------------------------------------------------*/
 
-// Initialization bittiming constants
+// -------------------- Initialization bittiming constants --------------------
 static const struct can_bittiming_const ncan_bittiming_const 
 {		
 	.name = DRV_NAME,
@@ -366,8 +367,53 @@ static int ncan_platform_probe( struct platform_device *pdev )
 	struct ncan_priv *priv;
 	struct resource *mem, *irq;
 	void __iomem *addr;
+	int error_code;
 
+	// Get memory resources of device 
 	mem = platform_get_resource( &pdev->dev, IORESOURCE_MEM, 0 );
+	if( !mem )
+	{
+		dev_err( &pdev->dev, "No memory resources\n" );
+		error_code = -ENODEV;
+		goto exit;
+	}
+
+	// Get IRQ resources of device 
+	irq = platform_get_resource( &pdev->dev, IORESOURCE_IRQ, 0 );
+	if( !irq )
+	{
+		dev_err( &pdev->dev, "No irq resources\n" );
+		error_code = -ENODEV;
+		goto exit;
+	}	
+
+	// Reserve memory region corresponding to device
+	if( !request_mem_region( mem->start, resource_size( mem ), pdev->name) )
+	{
+		dev_err( &pdev->dev, "Memory region already is claimed\n" );
+		error_code = -EBUSY;
+		goto exit;
+	}
+
+	// Translate physical address to virtual 
+	addr = ioremap( mem->start, resource_size( mem ));
+	if( !addr )
+	{
+		dev_err( &pdev->dev, "Virtual address is not allocated\n" );
+		error_code = -ENOMEM;
+		goto free_mem_region;
+	}
+
+	// Allocate memory for net device in global list
+
+
+
+
+
+free_mem_region:
+	release_mem_region( mem->start, resource_size( mem )) );
+exit:
+	return error_code;
 }
 
 
@@ -465,4 +511,4 @@ module_exit( ncan_module_exit );
 -----------------------------------------------------------------------------*/
 
 MODULE_AUTHOR("A.Smirnov <altemka@icloud.com>");
-MODULE_DESCRIPTION("CAN driver for SoC 1907BM056");
+MODULE_DESCRIPTION("Driver for CAN module into SoC 1907BM056");

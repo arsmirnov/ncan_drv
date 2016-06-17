@@ -1,6 +1,7 @@
-#	Makefile for building module of kernel
-#	Author: A.Smirnov
-##
+##############################################################################
+#		Makefile for building module of kernel          				     #
+#		Author: A.Smirnov												     #
+##############################################################################
 
 TARGET_NAME := ncan.c
 
